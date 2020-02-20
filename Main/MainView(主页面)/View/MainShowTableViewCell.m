@@ -24,10 +24,7 @@
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
-        
-        [self setNeedsLayout];
-        [self layoutIfNeeded];
+        [self viewSettingAction];
     }
     return self;
 }
@@ -88,6 +85,15 @@
         _infoLab.numberOfLines = 0;
     }
     return _infoLab;
+}
+
+#pragma mark - private func
+
+- (void)viewSettingAction {
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
 }
 
 @end

@@ -81,12 +81,28 @@
 
 #pragma mark - webDataAnalysis
 
-/// 解析数组
+/// 解析数组,先将返回的数据 与 旧数据的第一条做对比 若是有相符合信息的则把新的新闻添加到显示数据的头部
 /// @param data 网络读取的数组
 - (void)dataAnalysisWithArrData:(NSArray *)data {
-    [self.dataArr removeAllObjects];
+    if (data.count <= 0) {
+        return;
+    }
+    
+    int count = 0;
+    
     for (int i = 0; i < data.count; i++) {
+        ShowModel *oldData = self.dataArr[0];
         NSDictionary *showData = data[i];
+        NSString *info = [showData objectForKey:@"title"];
+        
+        if ([oldData.detailInfo isEqualToString:info]) {
+            count = i;
+            break;
+        }
+    }
+    
+    for (; count > 0; count--) {
+        NSDictionary *showData = data[count - 1];
         NSString *info = [showData objectForKey:@"title"];
         NSString *imageUrl = [showData objectForKey:@"thumbnail_pic_s"];
         
@@ -95,7 +111,7 @@
         model.showImageUrl = imageUrl;
         model.gradeNumber = [NSNumber numberWithInt:0];
         
-        [self.dataArr addObject:model];
+        [self.dataArr insertObject:model atIndex:0];
     }
 }
 

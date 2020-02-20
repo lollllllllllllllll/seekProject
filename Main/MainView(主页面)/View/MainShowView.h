@@ -14,10 +14,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void(^clickBlock)(NSInteger indexRow);
 
+typedef void(^refreshBlock)(void);
+
 @interface MainShowView : UIView
 
 /// 点击事件的回调
 @property (nonatomic, copy) clickBlock block;
+
+/// 下滑更新block
+@property (nonatomic, copy) refreshBlock freshBlock;
 
 /// 设置模型数据
 /// @param showModel MainShowModel

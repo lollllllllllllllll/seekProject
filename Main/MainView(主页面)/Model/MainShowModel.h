@@ -9,11 +9,9 @@
 #import <Foundation/Foundation.h>
 @class ShowModel;
 
-typedef NS_ENUM(NSInteger, DataBackState)
-{
+typedef NS_ENUM(NSInteger, DataBackState) {
     success = 0, //数据返回成功
     failed = 1,  //数据返回失败
-
 };
 
 typedef void(^dataBackBlock)(DataBackState state);

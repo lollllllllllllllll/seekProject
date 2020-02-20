@@ -10,6 +10,7 @@
 #import "MainShowViewController.h"
 #import "MainShowModel.h"
 #import "MainShowView.h"
+#import "AppDelegate.h"
 
 #import <Masonry.h>
 
@@ -32,7 +33,6 @@ static NSString * const showDataArchiverPrefix = @"dataArrFile";
     self.navigationController.navigationBar.translucent = NO;
     
     [self unArchiveObject];
-    [self addNotice];
     
     [self setBlock];
     [self addShowViewToMainView];
@@ -45,6 +45,8 @@ static NSString * const showDataArchiverPrefix = @"dataArrFile";
 - (void)setBlock {
     [self clickTableRow];
     [self setModelBackBlock];
+    [self setFreshBolck];
+    [self setAppCloseSaveDataBlock];
 }
 
 /// 点击tableview的回调
@@ -66,9 +68,24 @@ static NSString * const showDataArchiverPrefix = @"dataArrFile";
     self.showModel.backBlock = ^(DataBackState state) {
         if (state == success) {
             [weakSelf setModelToTableView];
-            [weakSelf archiveObject];
         }
     };
+}
+
+/// 设置下拉刷新的b回调
+- (void)setFreshBolck {
+    __weak __typeof(self) weakSelf = self;
+    [self.showView setFreshBlock:^{
+        [weakSelf.showModel getWebData];
+    }];
+}
+
+/// 设置app关闭时保存数据的block
+- (void)setAppCloseSaveDataBlock {
+    AppDelegate * appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    [appDelegate setSaveDataBlock:^{
+        [self archiveObject];
+    }];
 }
 
 #pragma mark - layout
@@ -113,9 +130,7 @@ static NSString * const showDataArchiverPrefix = @"dataArrFile";
 }
 
 - (void)unArchiveObject {
-    NSError *error;
-    NSData *data = [[NSData alloc] initWithContentsOfFile:[self getPathWithPrefix:showDataArchiverPrefix]];
-    
+    NSData *data = [[NSData alloc] initWithContentsOfFile:[self getPathWithPrefix:showDataArchiverPrefix]];    
     if (data) {
         if (self.showModel = [NSKeyedUnarchiver unarchiveObjectWithData:data]) {
             [self setModelToTableView];
@@ -139,18 +154,6 @@ static NSString * const showDataArchiverPrefix = @"dataArrFile";
     NSString *path = [NSString stringWithFormat:@"%@/%@.archive",filePathFolder,prefix];
 
     return path;
-}
-
-#pragma mark - notice
-
-- (void)addNotice {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(archiverNotificationHandler:) name:@"dataArchiver" object:nil];
-}
-
-- (void)archiverNotificationHandler:(NSNotification*)notification
-{
-    //从userInfo字典中获取数据展示到标签中
-    [self archiveObject];
 }
 
 @end

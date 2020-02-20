@@ -7,6 +7,7 @@
 //
 
 #import "ShowModel.h"
+#import "AppDelegate.h"
 #import "MainShowModel.h"
 #import "XHStarRateView.h"
 #import "DetailShowViewController.h"
@@ -45,17 +46,19 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = UIColor.whiteColor;
     
-    [self.view addSubview:self.starRateView];
-    [self.view addSubview:self.showImageView];
-    [self.view addSubview:self.infoLab];
-    
+    [self viewSettingAction];
     [self loadGesture];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    AppDelegate * appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    appDelegate.allowRotation = onlyMaskPortrait;
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"dataArchiver" object:nil userInfo:nil];
+    AppDelegate * appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    appDelegate.allowRotation = allMask;
 }
 
 #pragma mark - lazy load
@@ -117,6 +120,17 @@
     
     [self.model setGradeNumber:[NSNumber numberWithFloat:result]];
     [self setModel:[self.modelData getShowModelAtIndex:self.selectIndex]];
+}
+
+#pragma mark - private func
+
+/// 设置view
+- (void)viewSettingAction {
+    self.view.backgroundColor = UIColor.whiteColor;
+    
+    [self.view addSubview:self.starRateView];
+    [self.view addSubview:self.showImageView];
+    [self.view addSubview:self.infoLab];
 }
 
 #pragma mark - public func

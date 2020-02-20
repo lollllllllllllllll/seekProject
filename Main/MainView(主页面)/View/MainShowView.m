@@ -12,8 +12,9 @@
 #import "XHStarRateView.h"
 #import "MainShowTableViewCell.h"
 
-#import <SDWebImage.h>
 #import <Masonry.h>
+#import <SDWebImage.h>
+#import <MJRefresh.h>
 
 @interface MainShowView () <UITableViewDelegate, UITableViewDataSource>
 
@@ -43,18 +44,12 @@
 
 - (instancetype)init {
     if (self = [super init]) {
+    
+        [self postNotice];
         
-        [self addSubview:self.tableView];
-        [self addSubview:self.showImageView];
-        [self addSubview:self.detailInfoLab];
-        [self addSubview:self.starView];
+        [self viewSettingAction];
     }
-    
-    [self setNeedsLayout];
-    [self layoutIfNeeded];
-    
-    [self postNotice];
-    
+
     return self;
 }
 
@@ -96,8 +91,6 @@
 
 #pragma mark - post notice
 
-
-
 /// 注册屏幕变化通知
 - (void)postNotice {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeRotate:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
@@ -108,6 +101,18 @@
 - (void)changeRotate:(NSNotification*)noti {
     [self setNeedsLayout];
     [self layoutIfNeeded];
+}
+
+#pragma mark - addFreshBlock
+
+- (void)addHeaderReFresh {
+    __weak __typeof(self) weakSelf = self;
+
+    [self.tableView setMj_header:[MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        if (weakSelf.freshBlock) {
+            weakSelf.freshBlock();
+        }
+    }]];
 }
 
 #pragma mark - layout
@@ -124,7 +129,6 @@
         self.showImageView.hidden   = YES;
         self.detailInfoLab.hidden   = YES;
         self.starView.hidden        = YES;
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"dataArchiver" object:nil userInfo:nil];
     } else {
         self.showImageView.hidden   = NO;
         self.detailInfoLab.hidden   = NO;
@@ -151,7 +155,7 @@
 }
 
 #pragma mark - lazy load
-///TODO: 删除测试数据
+
 - (UITableView *)tableView {
     if (!_tableView) {
         _tableView = [[UITableView alloc] init];
@@ -197,17 +201,21 @@
         self.selectIndex = 0;
     }
     [self.tableView reloadData];
+    if (self.tableView.mj_header) {
+        [self.tableView.mj_header endRefreshing];
+    }
 }
 
 #pragma mark - private func
 
 /// 返回当前屏幕状态，若当前为竖屏返回ture，反之返回false
 - (BOOL)getPortrait {
-    if ([[UIDevice currentDevice] orientation] == UIInterfaceOrientationPortrait
-            || [[UIDevice currentDevice] orientation] == UIInterfaceOrientationPortraitUpsideDown) {
-        return true;
-    } else {
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    if (orientation == UIInterfaceOrientationLandscapeLeft ||
+        orientation == UIInterfaceOrientationLandscapeRight) {
         return false;
+    } else {
+        return true;
     }
 }
 
@@ -219,6 +227,17 @@
     [self.detailInfoLab setText:tmodel.detailInfo];
     [self.starView setUpShowStarScore:tmodel.gradeNumber.floatValue];
     [self setSelectIndex:index];
+}
+
+- (void)viewSettingAction {
+    [self addSubview:self.tableView];
+    [self addSubview:self.showImageView];
+    [self addSubview:self.detailInfoLab];
+    [self addSubview:self.starView];
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
+    
+    [self addHeaderReFresh];
 }
 
 @end

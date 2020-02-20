@@ -161,8 +161,6 @@
 			isa = PBXGroup;
 			children = (
 				CD2C4E5923FC3E0600631649 /* Controller */,
-				CD2C4E5B23FC3E0600631649 /* Model */,
-				CD2C4E5A23FC3E0600631649 /* View */,
 			);
 			path = "DetailView(详情页面)";
 			sourceTree = "<group>";
@@ -205,20 +203,6 @@
 				CD2C4EB323FCEB7900631649 /* DetailShowViewController.m */,
 			);
 			path = Controller;
-			sourceTree = "<group>";
-		};
-		CD2C4E5A23FC3E0600631649 /* View */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		CD2C4E5B23FC3E0600631649 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		CD2C4EB523FCED1300631649 /* Third */ = {
